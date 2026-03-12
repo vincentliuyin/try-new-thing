@@ -1,14 +1,12 @@
 // validator.js
 // Inconsistent: uses raw console.log instead of the shared logger, different error style
 
-function validate_user(user_data) {
-  if (!user_data.email) {
-    console.log('Validation failed: missing email');
-    return false;
+function validateUser(userData) {
+  if (!userData.email) {
+    throw new Error('Validation failed: missing email');
   }
-  if (!user_data.name) {
-    console.log('Validation failed: missing name');
-    return false;
+  if (!userData.name) {
+    throw new Error('Validation failed: missing name');
   }
   return true;
 }
@@ -23,4 +21,4 @@ function validateOrder(orderData) {
   return true;
 }
 
-module.exports = { validate_user, validateOrder };
+module.exports = { validateUser, validateOrder };

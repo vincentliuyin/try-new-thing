@@ -1,29 +1,28 @@
 // order_service.js
-// Inconsistent style: snake_case, .then()/.catch(), throws on error
+// Fixed: camelCase, async/await, returns { data, error }, uses logger
 
 const logger = require('../utils/logger');
 
-function get_order_by_id(order_id) {
-  return db.query('SELECT * FROM orders WHERE id = ?', [order_id])
-    .then(order => {
-      console.log('fetched order: ' + order_id);
-      return order;
-    })
-    .catch(err => {
-      console.error('failed to fetch order', err);
-      throw new Error(err.message);
-    });
+async function getOrderById(orderId) {
+  try {
+    const order = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+    logger.info('[OrderService] fetched order', { orderId });
+    return { data: order, error: null };
+  } catch (err) {
+    logger.error('[OrderService] failed to fetch order', { orderId, err });
+    return { data: null, error: err.message };
+  }
 }
 
-function create_order(order_data) {
-  return db.query('INSERT INTO orders SET ?', [order_data])
-    .then(order => {
-      console.log('created order');
-      return order;
-    })
-    .catch(err => {
-      throw new Error(err.message);
-    });
+async function createOrder(orderData) {
+  try {
+    const order = await db.query('INSERT INTO orders SET ?', [orderData]);
+    logger.info('[OrderService] created order', { orderData });
+    return { data: order, error: null };
+  } catch (err) {
+    logger.error('[OrderService] failed to create order', { orderData, err });
+    return { data: null, error: err.message };
+  }
 }
 
-module.exports = { get_order_by_id, create_order };
+module.exports = { getOrderById, createOrder };

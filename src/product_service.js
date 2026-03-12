@@ -4,15 +4,18 @@
 const logger = require('../utils/logger');
 
 async function getProductById(productId) {
-  const product = await db.query('SELECT * FROM products WHERE id = ?', [productId])
-    .then(result => result[0]);
-
-  if (!product) {
-    throw new Error('Product not found');
+  try {
+    const results = await db.query('SELECT * FROM products WHERE id = ?', [productId]);
+    const product = results[0];
+    if (!product) {
+      return { data: null, error: 'Product not found' };
+    }
+    logger.info('[ProductService] fetched product', { productId });
+    return { data: product, error: null };
+  } catch (err) {
+    logger.error('[ProductService] failed to fetch product', { productId, err });
+    return { data: null, error: err.message };
   }
-
-  console.log('[ProductService] fetched product', productId);
-  return product;
 }
 
 async function createProduct(productData) {
